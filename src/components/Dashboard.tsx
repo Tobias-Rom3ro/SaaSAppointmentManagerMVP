@@ -67,7 +67,11 @@ const getStatusConfig = (status: string) => {
   }
 };
 
-export function Dashboard() {
+type DashboardProps = {
+  onGoToAppointments?: () => void
+};
+
+export function Dashboard({ onGoToAppointments }: DashboardProps) {
   return (
     <div className="p-8 space-y-8">
       {/* Header */}
@@ -194,6 +198,7 @@ export function Dashboard() {
               className="px-6 py-3 bg-white/20 backdrop-blur text-white rounded-xl hover:bg-white/30 transition-colors"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={onGoToAppointments}
             >
               Ver Calendario
             </motion.button>

@@ -4,20 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f47cda20-cb92-4011-bad5-6cf868053536" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/postcss.config.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tailwind.config.js" afterDir="false" />
+    <list default="true" id="f47cda20-cb92-4011-bad5-6cf868053536" name="Changes" comment="last version">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/AppointmentCalendar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/AppointmentCalendar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/LoginScreen.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/LoginScreen.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/NotificationsPanel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/NotificationsPanel.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ServicesModule.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ServicesModule.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Sidebar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/contexts/ThemeContext.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/contexts/ThemeContext.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/styles/globals.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Dashboard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Dashboard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/MainLayout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/MainLayout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/TopBar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/TopBar.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,25 +18,25 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "Tobias-Rom3ro"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Tobias-Rom3ro&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/Tobias-Rom3ro/SaaSAppointmentManagerMVP.git",
-    "accountId": "42d47428-961b-4bdc-b4e3-9a1ed3f92445"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Tobias-Rom3ro/SaaSAppointmentManagerMVP.git&quot;,
+    &quot;accountId&quot;: &quot;42d47428-961b-4bdc-b4e3-9a1ed3f92445&quot;
   }
-}]]></component>
+}</component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 1
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 1
+}</component>
   <component name="ProjectId" id="35MndhUm1xzMEaXeDn6xARQDbQs" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -55,6 +46,7 @@
   "keyToString": {
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "master",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -109,11 +101,25 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1762928902886</updated>
-      <workItem from="1762928912418" duration="9489000" />
+      <workItem from="1762928912418" duration="10713000" />
+      <workItem from="1762951061312" duration="1995000" />
     </task>
+    <task id="LOCAL-00001" summary="last version">
+      <option name="closed" value="true" />
+      <created>1762949939233</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1762949939233</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="last version" />
+    <option name="LAST_COMMIT_MESSAGE" value="last version" />
   </component>
 </project>

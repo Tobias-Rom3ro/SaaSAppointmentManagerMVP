@@ -16,7 +16,7 @@ export function MainLayout() {
   const renderView = () => {
     switch (currentView) {
       case 'dashboard':
-        return <Dashboard />;
+        return <Dashboard onGoToAppointments={() => setCurrentView('appointments')} />;
       case 'appointments':
         return <AppointmentsModule />;
       case 'employees':
