@@ -7,11 +7,13 @@ import { EmployeesModule } from './EmployeesModule';
 import { ServicesModule } from './ServicesModule';
 import { NotificationsPanel } from './NotificationsPanel';
 import { SettingsPanel } from './SettingsPanel';
+import {LoginScreen} from "./LoginScreen";
 
-export type ViewType = 'dashboard' | 'appointments' | 'employees' | 'services' | 'notifications' | 'settings';
+export type ViewType = 'dashboard' | 'appointments' | 'employees' | 'services' | 'notifications' | 'settings' | 'login';
 
 export function MainLayout() {
   const [currentView, setCurrentView] = useState<ViewType>('dashboard');
+  const handleLoggedIn = () => setCurrentView('dashboard')
 
   const renderView = () => {
     switch (currentView) {
@@ -27,22 +29,23 @@ export function MainLayout() {
         return <NotificationsPanel />;
       case 'settings':
         return <SettingsPanel />;
+      case 'login':
+        return <LoginScreen onLogin={handleLoggedIn} />
       default:
         return <Dashboard />;
     }
   };
 
+  const isAuthView = currentView !== 'login'
   return (
-    <div className="flex h-screen bg-slate-50 dark:bg-slate-900 overflow-hidden">
-      <Sidebar currentView={currentView} onViewChange={setCurrentView} />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <TopBar currentView={currentView} />
-        <main className="flex-1 overflow-auto">
-          <div className="min-h-full">
-            {renderView()}
-          </div>
-        </main>
+      <div className="flex h-screen bg-slate-50 dark:bg-slate-900 overflow-hidden">
+        {isAuthView && <Sidebar currentView={currentView} onViewChange={setCurrentView} />}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {isAuthView && <TopBar currentView={currentView} onLogout={() => setCurrentView('login')} />}
+          <main className="flex-1 overflow-auto">
+            <div className="min-h-full">{renderView()}</div>
+          </main>
+        </div>
       </div>
-    </div>
   );
 }

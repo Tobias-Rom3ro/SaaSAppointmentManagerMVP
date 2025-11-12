@@ -55,13 +55,15 @@ const viewTitles: Record<ViewType, string> = {
   services: 'Servicios',
   notifications: 'Notificaciones',
   settings: 'Configuración',
+  login: 'Iniciar sesión',
 };
 
 interface TopBarProps {
   currentView: ViewType;
+  onLogout?: () => void
 }
 
-export function TopBar({ currentView }: TopBarProps) {
+export function TopBar({ currentView, onLogout }: TopBarProps) {
   const { theme, toggleTheme } = useTheme();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -261,7 +263,7 @@ export function TopBar({ currentView }: TopBarProps) {
                   <div className="my-2 h-px bg-slate-200 dark:bg-slate-700" />
 
                   {/* Logout */}
-                  <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors" onClick={() => (window.location.href = '/login')}>
+                  <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors" onClick={() => onLogout?.()}>
                     <LogOut className="w-5 h-5" />
                     <span>Cerrar Sesión</span>
                   </button>
