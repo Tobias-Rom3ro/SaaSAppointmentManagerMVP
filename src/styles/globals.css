@@ -1,0 +1,175 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    /* Paleta teal-verde-azulado tipo macOS */
+    --color-teal-50: 236 252 250;
+    --color-teal-100: 207 244 239;
+    --color-teal-200: 153 230 221;
+    --color-teal-300: 94 211 201;
+    --color-teal-400: 45 186 177;
+    --color-teal-500: 20 158 153;
+    --color-teal-600: 15 130 130;
+    --color-teal-700: 15 107 107;
+    --color-teal-800: 17 85 85;
+    --color-teal-900: 17 70 70;
+    
+    --color-marine-50: 238 245 249;
+    --color-marine-100: 220 235 242;
+    --color-marine-200: 185 215 229;
+    --color-marine-300: 140 189 214;
+    --color-marine-400: 88 158 196;
+    --color-marine-500: 52 131 178;
+    --color-marine-600: 37 107 153;
+    --color-marine-700: 32 88 127;
+    --color-marine-800: 30 75 106;
+    --color-marine-900: 28 63 89;
+    
+    --color-slate-50: 248 250 252;
+    --color-slate-100: 241 245 249;
+    --color-slate-200: 226 232 240;
+    --color-slate-300: 203 213 225;
+    --color-slate-400: 148 163 184;
+    --color-slate-500: 100 116 139;
+    --color-slate-600: 71 85 105;
+    --color-slate-700: 51 65 85;
+    --color-slate-800: 30 41 59;
+    --color-slate-900: 15 23 42;
+
+    --background: 248 250 252;
+    --foreground: 15 23 42;
+    --card: 255 255 255;
+    --card-foreground: 15 23 42;
+    --primary: 20 158 153;
+    --primary-foreground: 255 255 255;
+    --secondary: 52 131 178;
+    --secondary-foreground: 255 255 255;
+    --muted: 241 245 249;
+    --muted-foreground: 100 116 139;
+    --accent: 207 244 239;
+    --accent-foreground: 17 85 85;
+    --border: 226 232 240;
+    --input: 226 232 240;
+    --ring: 20 158 153;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 15 23 42;
+    --foreground: 241 245 249;
+    --card: 30 41 59;
+    --card-foreground: 241 245 249;
+    --primary: 45 186 177;
+    --primary-foreground: 15 23 42;
+    --secondary: 88 158 196;
+    --secondary-foreground: 15 23 42;
+    --muted: 51 65 85;
+    --muted-foreground: 148 163 184;
+    --accent: 30 41 59;
+    --accent-foreground: 207 244 239;
+    --border: 51 65 85;
+    --input: 51 65 85;
+    --ring: 45 186 177;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    line-height: 2.5rem;
+    letter-spacing: -0.025em;
+  }
+
+  h2 {
+    font-size: 1.875rem;
+    font-weight: 600;
+    line-height: 2.25rem;
+    letter-spacing: -0.025em;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 2rem;
+  }
+
+  h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.75rem;
+  }
+
+  h5 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.5rem;
+  }
+
+  h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.5rem;
+  }
+
+  p {
+    font-size: 1rem;
+    line-height: 1.625rem;
+  }
+
+  small {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+}
+
+/* macOS-like shadows and effects */
+.macos-shadow {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.dark .macos-shadow {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.macos-shadow-lg {
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.dark .macos-shadow-lg {
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.macos-shadow-xl {
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.dark .macos-shadow-xl {
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.backdrop-blur-macos {
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+}
+
+.glassmorphism {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+.dark .glassmorphism {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
