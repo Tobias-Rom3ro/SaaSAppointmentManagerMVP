@@ -110,7 +110,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
             transition={{ delay: 0.8 }}
             className="text-center mt-6 text-slate-600 dark:text-slate-400 text-sm"
           >
-            Demo: Haz clic en "Iniciar Sesión" para continuar
+            Demo
           </motion.p>
         </motion.div>
       </div>

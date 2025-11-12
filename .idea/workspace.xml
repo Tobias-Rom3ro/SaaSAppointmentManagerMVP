@@ -4,11 +4,43 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f47cda20-cb92-4011-bad5-6cf868053536" name="Changes" comment="" />
+    <list default="true" id="f47cda20-cb92-4011-bad5-6cf868053536" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/postcss.config.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tailwind.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/AppointmentCalendar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/AppointmentCalendar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/LoginScreen.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/LoginScreen.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/NotificationsPanel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/NotificationsPanel.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ServicesModule.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ServicesModule.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Sidebar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/contexts/ThemeContext.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/contexts/ThemeContext.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/styles/globals.css" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "Tobias-Rom3ro"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Tobias-Rom3ro/SaaSAppointmentManagerMVP.git",
+    "accountId": "42d47428-961b-4bdc-b4e3-9a1ed3f92445"
+  }
+}]]></component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo"><![CDATA[{
   "customColor": "",
@@ -23,12 +55,13 @@
   "keyToString": {
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "master",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "npm.build.executor": "Run",
+    "npm.build.executor": "Debug",
     "npm.dev.executor": "Run",
     "ts.external.directory.path": "C:\\Users\\Usuario\\AppData\\Local\\Programs\\WebStorm\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
     "vue.rearranger.settings.migration": "true"
@@ -76,7 +109,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1762928902886</updated>
-      <workItem from="1762928912418" duration="1956000" />
+      <workItem from="1762928912418" duration="9489000" />
     </task>
     <servers />
   </component>

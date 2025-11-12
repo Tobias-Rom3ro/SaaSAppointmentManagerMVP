@@ -128,7 +128,7 @@ export function Sidebar({ currentView, onViewChange }: SidebarProps) {
           <div className="px-4 py-3 bg-gradient-to-br from-teal-50 to-marine-50 dark:from-teal-900/20 dark:to-marine-900/20 rounded-xl">
             <p className="text-slate-900 dark:text-white text-sm mb-1">Panel MVP</p>
             <p className="text-slate-600 dark:text-slate-400 text-xs">
-              Todos los sistemas operativos
+              Todos los derechos reservados.
             </p>
           </div>
         </motion.div>

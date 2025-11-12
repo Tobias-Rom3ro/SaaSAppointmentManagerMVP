@@ -123,8 +123,8 @@ export function ServicesModule() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-slate-900 mb-2">Gestión de Servicios</h1>
-          <p className="text-slate-600">Administra los servicios que ofreces</p>
+          <h1 className="text-slate-900 dark:text-white mb-2">Gestión de Servicios</h1>
+          <p className="text-slate-600 dark:text-slate-400">Administra los servicios que ofreces</p>
         </div>
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
           <Button className="bg-gradient-to-r from-teal-500 to-marine-500 hover:from-teal-600 hover:to-marine-600 text-white px-6 h-11 rounded-xl macos-shadow">
@@ -136,12 +136,12 @@ export function ServicesModule() {
 
       {/* Search and Categories */}
       <div className="space-y-4">
-        <Card className="p-4 macos-shadow border-0 bg-white">
+        <Card className="p-4 macos-shadow border-0 bg-white dark:bg-slate-800">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-slate-500" />
             <Input
               placeholder="Buscar servicios..."
-              className="pl-10 h-10 bg-slate-50 border-slate-200 rounded-xl"
+              className="pl-10 h-10 bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder:text-slate-400"
             />
           </div>
         </Card>
@@ -153,8 +153,10 @@ export function ServicesModule() {
               onClick={() => setSelectedCategory(category)}
               className={`px-4 py-2 rounded-xl whitespace-nowrap transition-all ${
                 selectedCategory === category
-                  ? 'bg-gradient-to-r from-teal-500 to-marine-500 text-white macos-shadow'
-                  : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'
+                  ? 'bg-gradient-to-r from-teal-500 to-cyan-600 text-white macos-shadow +\n' +
+                    'dark:from-teal-400 dark:to-sky-500 dark:text-slate-900'
+                  : '      bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 +\n' +
+                    '      dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:border-slate-600'
               }`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -174,8 +176,8 @@ export function ServicesModule() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
           >
-            <Card className={`p-6 macos-shadow hover:shadow-lg transition-all duration-300 border-0 bg-white group relative overflow-hidden ${
-              editingService === service.id ? 'ring-2 ring-teal-500' : ''
+            <Card className={`p-6 macos-shadow hover:shadow-lg transition-all duration-300 border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 group relative overflow-hidden ${
+              editingService === service.id ? 'ring-2 ring-teal-500 dark:ring-teal-400' : ''
             }`}>
               {/* Popular Badge */}
               {service.popular && (
@@ -200,30 +202,32 @@ export function ServicesModule() {
               {/* Content */}
               <div className="space-y-3">
                 <div>
-                  <h4 className="text-slate-900 mb-1">{service.name}</h4>
-                  <p className="text-slate-500 text-xs mb-2">{service.category}</p>
-                  <p className="text-slate-600 text-sm">{service.description}</p>
+                  <h4 className="text-slate-900 dark:text-slate-100 mb-1">{service.name}</h4>
+                  <p className="text-slate-500 dark:text-slate-400 text-xs mb-2">{service.category}</p>
+                  <p className="text-slate-600 dark:text-slate-300 text-sm">{service.description}</p>
                 </div>
 
                 {/* Details */}
-                <div className="pt-3 border-t border-slate-100 space-y-2">
+                <div className="pt-3 border-t border-slate-100 dark:border-slate-100 space-y-2">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-slate-600">
+                    <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
                       <Clock className="w-4 h-4" />
                       <span className="text-sm">{service.duration}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <DollarSign className="w-4 h-4 text-teal-600" />
-                      <span className="text-slate-900">{service.price}</span>
+                      <DollarSign className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+                      <span className="text-slate-900 dark:text-slate-100">{service.price}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Actions */}
-                <div className="pt-3 border-t border-slate-100 flex gap-2">
+                <div className="pt-3 border-t border-slate-100 dark:border-slate-700/60 flex gap-2">
                   <motion.button
                     onClick={() => setEditingService(service.id)}
-                    className="flex-1 py-2 px-4 bg-slate-50 hover:bg-teal-50 text-slate-700 hover:text-teal-700 rounded-xl transition-colors flex items-center justify-center gap-2"
+                    className="flex-1 py-2 px-4 rounded-xl transition-colors flex items-center justify-center gap-2
+        bg-slate-50 dark:bg-slate-700 hover:bg-teal-50 dark:hover:bg-slate-600
+        text-slate-700 dark:text-slate-200 hover:text-teal-700 dark:hover:text-teal-300"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -231,11 +235,11 @@ export function ServicesModule() {
                     <span className="text-sm">Editar</span>
                   </motion.button>
                   <motion.button
-                    className="p-2 hover:bg-red-50 rounded-xl transition-colors"
+                    className="p-2 rounded-xl transition-colors hover:bg-red-50 dark:hover:bg-red-950/30"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                   >
-                    <Trash2 className="w-4 h-4 text-red-600" />
+                    <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
                   </motion.button>
                 </div>
               </div>
@@ -246,31 +250,31 @@ export function ServicesModule() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="p-6 macos-shadow border-0 bg-white">
+        <Card className="p-6 macos-shadow border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
           <div className="text-center">
-            <h3 className="text-slate-900 mb-1">{services.length}</h3>
-            <p className="text-slate-600 text-sm">Servicios Totales</p>
+            <h3 className="text-slate-900 dark:text-slate-100 mb-1">{services.length}</h3>
+            <p className="text-slate-600 dark:text-slate-400 text-sm">Servicios Totales</p>
           </div>
         </Card>
 
-        <Card className="p-6 macos-shadow border-0 bg-white">
+        <Card className="p-6 macos-shadow border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
           <div className="text-center">
-            <h3 className="text-slate-900 mb-1">{services.filter(s => s.popular).length}</h3>
-            <p className="text-slate-600 text-sm">Servicios Populares</p>
+            <h3 className="text-slate-900 dark:text-slate-100 mb-1">{services.filter(s => s.popular).length}</h3>
+            <p className="text-slate-600 dark:text-slate-400 text-sm">Servicios Populares</p>
           </div>
         </Card>
 
-        <Card className="p-6 macos-shadow border-0 bg-white">
+        <Card className="p-6 macos-shadow border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
           <div className="text-center">
-            <h3 className="text-slate-900 mb-1">$58</h3>
-            <p className="text-slate-600 text-sm">Precio Promedio</p>
+            <h3 className="text-slate-900 dark:text-slate-100 mb-1">$58</h3>
+            <p className="text-slate-600 dark:text-slate-400 text-sm">Precio Promedio</p>
           </div>
         </Card>
 
-        <Card className="p-6 macos-shadow border-0 bg-white">
+        <Card className="p-6 macos-shadow border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
           <div className="text-center">
-            <h3 className="text-slate-900 mb-1">1.5h</h3>
-            <p className="text-slate-600 text-sm">Duración Promedio</p>
+            <h3 className="text-slate-900 dark:text-slate-100 mb-1">1.5h</h3>
+            <p className="text-slate-600 dark:text-slate-400 text-sm">Duración Promedio</p>
           </div>
         </Card>
       </div>
