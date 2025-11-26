@@ -116,7 +116,7 @@ export function Sidebar({ currentView, onViewChange }: SidebarProps) {
         })}
         {isCollapsed && (
           <div className="mt-auto flex justify-center pt-4">
-            <img src="/logo.png" alt="SquareUp" className="w-6 h-6 object-contain" />
+            <img src="/logo.png" alt="SphereUp" className="w-6 h-6 object-contain" />
           </div>
         )}
       </nav>
@@ -132,9 +132,9 @@ export function Sidebar({ currentView, onViewChange }: SidebarProps) {
         >
           <div className="px-4 py-3 bg-gradient-to-br from-teal-50 to-marine-50 dark:from-teal-900/20 dark:to-marine-900/20 rounded-xl">
             <div className="flex items-center gap-3">
-              <img src="/logo.png" alt="SquareUp" className="w-5 h-5 object-contain" />
+              <img src="/logo.png" alt="SphereUp" className="w-5 h-5 object-contain" />
               <div>
-                <p className="text-slate-900 dark:text-white text-sm mb-1">SquareUp</p>
+                <p className="text-slate-900 dark:text-white text-sm mb-1">SphereUp</p>
                 <p className="text-slate-600 dark:text-slate-400 text-xs">Todos los derechos reservados.</p>
               </div>
             </div>

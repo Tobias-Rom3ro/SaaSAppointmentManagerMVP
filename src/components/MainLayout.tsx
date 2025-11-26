@@ -8,12 +8,26 @@ import { ServicesModule } from './ServicesModule';
 import { NotificationsPanel } from './NotificationsPanel';
 import { SettingsPanel } from './SettingsPanel';
 import {LoginScreen} from "./LoginScreen";
+import { useEffect } from 'react';
 
 export type ViewType = 'dashboard' | 'appointments' | 'employees' | 'services' | 'notifications' | 'settings' | 'login';
 
 export function MainLayout() {
   const [currentView, setCurrentView] = useState<ViewType>('dashboard');
   const handleLoggedIn = () => setCurrentView('dashboard')
+
+  useEffect(() => {
+    const titles: Record<ViewType, string> = {
+      dashboard: 'Dashboard — SphereUp',
+      appointments: 'Citas — SphereUp',
+      employees: 'Empleados — SphereUp',
+      services: 'Servicios — SphereUp',
+      notifications: 'Notificaciones — SphereUp',
+      settings: 'Configuración — SphereUp',
+      login: 'Login — SphereUp',
+    };
+    document.title = titles[currentView] || 'SphereUp';
+  }, [currentView]);
 
   const renderView = () => {
     switch (currentView) {

@@ -54,9 +54,9 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
             {/* Header */}
             <div className="text-center mb-10">
               <motion.div initial={{ y: -6 }} animate={{ y: 0 }} transition={{ repeat: Infinity, repeatType: 'reverse', duration: 3 }} className="inline-flex items-center justify-center mb-3">
-                <img src="/logo.png" alt="SquareUp" className="w-16 h-16 object-contain" />
+                <img src="/logo.png" alt="SphereUp" className="w-16 h-16 object-contain" />
               </motion.div>
-              <img src="/Nombre (2).png" alt="SquareUp Nombre" className="mx-auto h-8 object-contain" />
+              <img src="/Nombre (2).png" alt="SphereUp Nombre" className="mx-auto h-8 object-contain" />
               <p className="text-slate-600 dark:text-slate-400 mt-2">Panel de Administración</p>
             </div>
 
@@ -123,7 +123,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <h2 className="mb-1 text-xl font-semibold">Recuperar contraseña</h2>
-                    <p className="text-white/80 text-sm">Para reestablecer la contraseña debes contactar al administrador de SquareUp</p>
+                    <p className="text-white/80 text-sm">Para reestablecer la contraseña debes contactar al administrador de SphereUp</p>
                   </div>
                   <button onClick={() => setShowForgot(false)} className="p-2 hover:bg-white/20 rounded-xl transition-colors" aria-label="Cerrar">✕</button>
                 </div>
