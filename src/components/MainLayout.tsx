@@ -9,25 +9,27 @@ import { NotificationsPanel } from './NotificationsPanel';
 import { SettingsPanel } from './SettingsPanel';
 import {LoginScreen} from "./LoginScreen";
 import { useEffect } from 'react';
+import { useAppData } from '../App';
 
 export type ViewType = 'dashboard' | 'appointments' | 'employees' | 'services' | 'notifications' | 'settings' | 'login';
 
 export function MainLayout() {
   const [currentView, setCurrentView] = useState<ViewType>('dashboard');
   const handleLoggedIn = () => setCurrentView('dashboard')
+  const { settings } = useAppData();
 
   useEffect(() => {
     const titles: Record<ViewType, string> = {
-      dashboard: 'Dashboard — SphereUp',
-      appointments: 'Citas — SphereUp',
-      employees: 'Empleados — SphereUp',
-      services: 'Servicios — SphereUp',
-      notifications: 'Notificaciones — SphereUp',
-      settings: 'Configuración — SphereUp',
-      login: 'Login — SphereUp',
+      dashboard: 'Dashboard',
+      appointments: 'Citas',
+      employees: 'Empleados',
+      services: 'Servicios',
+      notifications: 'Notificaciones',
+      settings: 'Configuración',
+      login: 'Login',
     };
-    document.title = titles[currentView] || 'SphereUp';
-  }, [currentView]);
+    document.title = `${titles[currentView]} — ${settings.businessName}`;
+  }, [currentView, settings.businessName]);
 
   const renderView = () => {
     switch (currentView) {
@@ -55,7 +57,7 @@ export function MainLayout() {
       <div className="flex h-screen bg-slate-50 dark:bg-slate-900 overflow-hidden">
         {isAuthView && <Sidebar currentView={currentView} onViewChange={setCurrentView} />}
         <div className="flex-1 flex flex-col overflow-hidden">
-          {isAuthView && <TopBar currentView={currentView} onLogout={() => setCurrentView('login')} />}
+          {isAuthView && <TopBar currentView={currentView} onLogout={() => setCurrentView('login')} onGoToNotifications={() => setCurrentView('notifications')} />}
           <main className="flex-1 overflow-auto">
             <div className="min-h-full">{renderView()}</div>
           </main>

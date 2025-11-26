@@ -5,6 +5,8 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Button } from './ui/button';
 import { Switch } from './ui/switch';
+import React from 'react';
+import { useAppData } from '../App';
 
 const settingsSections = [
   {
@@ -40,6 +42,22 @@ const settingsSections = [
 ];
 
 export function SettingsPanel() {
+  const { settings, updateSettings } = useAppData();
+  const [editable, setEditable] = React.useState(settings as any);
+  React.useEffect(() => { setEditable(settings as any); }, [settings]);
+  const onChange = (field: string, value: any) => setEditable((prev: any) => ({ ...prev, [field]: value }));
+  const onNested = (ns: 'notifications'|'security', field: string, value: any) => setEditable((prev: any) => ({ ...prev, [ns]: { ...prev[ns], [field]: value } }));
+  const onSave = () => {
+    if (!editable.businessName) return alert('El nombre del negocio es requerido');
+    const [oh, om] = String(editable.openTime || '08:00').split(':').map(Number);
+    const [ch, cm] = String(editable.closeTime || '20:00').split(':').map(Number);
+    const openMins = oh * 60 + (om || 0);
+    const closeMins = ch * 60 + (cm || 0);
+    if (openMins >= closeMins) return alert('La hora de apertura debe ser menor que la de cierre');
+    if (Number(editable.slotDurationMinutes) <= 0) return alert('La duración de turnos debe ser mayor a 0');
+    updateSettings(editable);
+    alert('Configuración guardada');
+  };
   return (
       <div className="p-8 space-y-6">
         {/* Header */}
@@ -112,7 +130,8 @@ export function SettingsPanel() {
                     <Label htmlFor="firstName" className="text-slate-700 dark:text-slate-200">Nombre</Label>
                     <Input
                         id="firstName"
-                        defaultValue="Admin"
+                        value={editable.firstName}
+                        onChange={(e) => onChange('firstName', e.target.value)}
                         className="h-11 rounded-xl
                                bg-slate-50 dark:bg-slate-800
                                border-slate-200 dark:border-slate-700
@@ -124,7 +143,8 @@ export function SettingsPanel() {
                     <Label htmlFor="lastName" className="text-slate-700 dark:text-slate-200">Apellido</Label>
                     <Input
                         id="lastName"
-                        defaultValue="Usuario"
+                        value={editable.lastName}
+                        onChange={(e) => onChange('lastName', e.target.value)}
                         className="h-11 rounded-xl
                                bg-slate-50 dark:bg-slate-800
                                border-slate-200 dark:border-slate-700
@@ -139,7 +159,8 @@ export function SettingsPanel() {
                   <Input
                       id="email"
                       type="email"
-                      defaultValue="admin@ejemplo.com"
+                      value={editable.email}
+                      onChange={(e) => onChange('email', e.target.value)}
                       className="h-11 rounded-xl
                              bg-slate-50 dark:bg-slate-800
                              border-slate-200 dark:border-slate-700
@@ -152,7 +173,8 @@ export function SettingsPanel() {
                   <Label htmlFor="phone" className="text-slate-700 dark:text-slate-200">Teléfono</Label>
                   <Input
                       id="phone"
-                      defaultValue="+34 600 000 000"
+                      value={editable.phone}
+                      onChange={(e) => onChange('phone', e.target.value)}
                       className="h-11 rounded-xl
                              bg-slate-50 dark:bg-slate-800
                              border-slate-200 dark:border-slate-700
@@ -198,7 +220,7 @@ export function SettingsPanel() {
                         <p className="text-slate-900 dark:text-slate-100">{row.title}</p>
                         <p className="text-slate-500 dark:text-slate-400 text-sm">{row.desc}</p>
                       </div>
-                      <Switch defaultChecked={row.checked} />
+                      <Switch defaultChecked={true} onCheckedChange={(v) => onNested('notifications', (['emailEnabled','pushEnabled','remindersEnabled','weeklySummaryEnabled'][i] as any), v)} />
                     </div>
                 ))}
               </div>
@@ -212,7 +234,8 @@ export function SettingsPanel() {
                   <Label htmlFor="businessName" className="text-slate-700 dark:text-slate-200">Nombre del Negocio</Label>
                   <Input
                       id="businessName"
-                      defaultValue="La Estación"
+                      value={editable.businessName}
+                      onChange={(e) => onChange('businessName', e.target.value)}
                       className="h-11 rounded-xl
                              bg-slate-50 dark:bg-slate-800
                              border-slate-200 dark:border-slate-700
@@ -226,7 +249,8 @@ export function SettingsPanel() {
                     <Label htmlFor="timezone" className="text-slate-700 dark:text-slate-200">Zona Horaria</Label>
                     <Input
                         id="timezone"
-                        defaultValue="Europe/Madrid (GMT+1)"
+                        value={editable.timezone}
+                        onChange={(e) => onChange('timezone', e.target.value)}
                         className="h-11 rounded-xl
                                bg-slate-50 dark:bg-slate-800
                                border-slate-200 dark:border-slate-700
@@ -238,7 +262,8 @@ export function SettingsPanel() {
                     <Label htmlFor="currency" className="text-slate-700 dark:text-slate-200">Moneda</Label>
                     <Input
                         id="currency"
-                        defaultValue="EUR (€)"
+                        value={editable.currency}
+                        onChange={(e) => onChange('currency', e.target.value)}
                         className="h-11 rounded-xl
                                bg-slate-50 dark:bg-slate-800
                                border-slate-200 dark:border-slate-700
@@ -254,7 +279,8 @@ export function SettingsPanel() {
                     <Input
                         id="openTime"
                         type="time"
-                        defaultValue="08:00"
+                        value={editable.openTime}
+                        onChange={(e) => onChange('openTime', e.target.value)}
                         className="h-11 rounded-xl
                                bg-slate-50 dark:bg-slate-800
                                border-slate-200 dark:border-slate-700
@@ -266,7 +292,8 @@ export function SettingsPanel() {
                     <Input
                         id="closeTime"
                         type="time"
-                        defaultValue="20:00"
+                        value={editable.closeTime}
+                        onChange={(e) => onChange('closeTime', e.target.value)}
                         className="h-11 rounded-xl
                                bg-slate-50 dark:bg-slate-800
                                border-slate-200 dark:border-slate-700
@@ -282,7 +309,8 @@ export function SettingsPanel() {
                   <Input
                       id="slotDuration"
                       type="number"
-                      defaultValue="30"
+                      value={editable.slotDurationMinutes}
+                      onChange={(e) => onChange('slotDurationMinutes', Number(e.target.value))}
                       className="h-11 rounded-xl
                              bg-slate-50 dark:bg-slate-800
                              border-slate-200 dark:border-slate-700
@@ -322,7 +350,7 @@ export function SettingsPanel() {
                       <p className="text-slate-900 dark:text-slate-100">Autenticación de Dos Factores</p>
                       <p className="text-slate-500 dark:text-slate-400 text-sm">Añade una capa extra de seguridad</p>
                     </div>
-                    <Switch />
+                    <Switch defaultChecked={false} onCheckedChange={(v) => onNested('security', 'twoFAEnabled', v)} />
                   </div>
                 </div>
               </div>
@@ -330,7 +358,7 @@ export function SettingsPanel() {
 
             {/* Save Button */}
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Button
+              <Button onClick={onSave}
                   className="w-full h-12 rounded-xl macos-shadow-lg
                          bg-gradient-to-r from-teal-500 to-cyan-600
                          hover:from-teal-600 hover:to-cyan-700

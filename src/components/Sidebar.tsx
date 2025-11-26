@@ -10,6 +10,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { useState } from 'react';
+import { useAppData } from '../App';
 import type { ViewType } from './MainLayout';
 
 interface SidebarProps {
@@ -28,6 +29,7 @@ const menuItems = [
 
 export function Sidebar({ currentView, onViewChange }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const { settings } = useAppData();
 
   return (
     <motion.aside
@@ -65,7 +67,7 @@ export function Sidebar({ currentView, onViewChange }: SidebarProps) {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
             >
-              <h3 className="text-slate-900 dark:text-white whitespace-nowrap">La Estación</h3>
+              <h3 className="text-slate-900 dark:text-white whitespace-nowrap">{settings.businessName}</h3>
               <p className="text-slate-500 dark:text-slate-400 text-xs whitespace-nowrap">Barbershop</p>
             </motion.div>
           )}

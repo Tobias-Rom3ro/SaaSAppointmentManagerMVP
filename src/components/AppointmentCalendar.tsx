@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card } from './ui/card';
 import { useAppData } from '../App';
 
-const HOURS = Array.from({ length: 13 }, (_, i) => i + 8); // 8:00 to 20:00
+// hours will be computed from settings
 const DAYS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 
 interface CalendarAppointment {
@@ -75,17 +75,36 @@ function AppointmentCard({ appointment, onClick }: AppointmentCardProps) {
 interface TimeSlotProps {
   day: number;
   hour: number;
+  appointmentsDay: CalendarAppointment[];
+  openHour: number;
+  closeHour: number;
   onDrop: (appointment: CalendarAppointment, day: number, hour: number) => void;
 }
 
-function TimeSlot({ day, hour, onDrop }: TimeSlotProps) {
+function TimeSlot({ day, hour, appointmentsDay, openHour, closeHour, onDrop }: TimeSlotProps) {
+  const fits = (item: CalendarAppointment) => {
+    const dur = item.duration;
+    const end = hour + dur;
+    if (hour < openHour || end > closeHour) return false;
+    for (const apt of appointmentsDay) {
+      if (apt.id === item.id) continue;
+      const aStart = apt.startHour;
+      const aEnd = apt.startHour + apt.duration;
+      // overlap if intervals intersect
+      if (!(end <= aStart || hour >= aEnd)) return false;
+    }
+    return true;
+  };
   const [{ isOver }, dropRef] = useDrop(() => ({
     accept: 'appointment',
-    drop: (item: CalendarAppointment) => onDrop(item, day, hour),
+    canDrop: (item: CalendarAppointment) => fits(item),
+    drop: (item: CalendarAppointment, monitor) => {
+      if (monitor.canDrop()) onDrop(item, day, hour);
+    },
     collect: (monitor) => ({
       isOver: monitor.isOver(),
     }),
-  }), [day, hour, onDrop]);
+  }), [day, hour, appointmentsDay, openHour, closeHour, onDrop]);
 
   return (
       <div
@@ -104,7 +123,7 @@ interface AppointmentCalendarProps {
 }
 
 export function AppointmentCalendar({ onAppointmentClick, filters }: AppointmentCalendarProps) {
-  const { appointments: ctxAppointments, updateAppointment } = useAppData();
+  const { appointments: ctxAppointments, updateAppointment, settings } = useAppData();
   const appointments = useMemo<CalendarAppointment[]>(() => {
     const parseDuration = (d: string) => {
       if (!d) return 1;
@@ -143,6 +162,14 @@ export function AppointmentCalendar({ onAppointmentClick, filters }: Appointment
     });
   }, [ctxAppointments]);
   const [currentWeek, setCurrentWeek] = useState(0);
+  const openHour = useMemo(() => Number(settings.openTime.split(':')[0]), [settings.openTime]);
+  const hours = useMemo(() => {
+    const [oh] = settings.openTime.split(':').map(Number);
+    const [ch] = settings.closeTime.split(':').map(Number);
+    const start = oh;
+    const end = ch;
+    return Array.from({ length: Math.max(1, end - start + 1) }, (_, i) => start + i);
+  }, [settings.openTime, settings.closeTime]);
 
   const handleDrop = (appointment: CalendarAppointment, newDay: number, newHour: number) => {
     const today = new Date();
@@ -222,62 +249,62 @@ export function AppointmentCalendar({ onAppointmentClick, filters }: Appointment
                 <div className="grid grid-cols-8">
                   {/* Hours Column */}
                   <div className="border-r border-slate-200 dark:border-slate-700">
-                    {HOURS.map((hour) => (
-                        <div
-                            key={hour}
-                            className="h-[60px] p-2 text-right border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-sm"
-                        >
-                          {hour}:00
-                        </div>
+                    {hours.map((hour) => (
+                      <div
+                          key={hour}
+                          className="h-[60px] p-2 text-right border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-sm"
+                      >
+                        {hour}:00
+                      </div>
                     ))}
                   </div>
 
                   {/* Days Columns */}
-                  {DAYS.map((_, dayIndex) => (
+                  {DAYS.map((_, dayIndex) => {
+                    const dayAppointments = appointments.filter((apt) => {
+                      const today = new Date();
+                      const dayOfWeek = (today.getDay() + 6) % 7;
+                      const start = new Date(today);
+                      start.setDate(today.getDate() - dayOfWeek + currentWeek * 7);
+                      const dateStr = ctxAppointments.find(a => a.id === apt.id)?.date;
+                      if (!dateStr) return apt.day === dayIndex;
+                      const d = new Date(dateStr + 'T00:00:00');
+                      const diffDays = Math.floor((d.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+                      return diffDays === dayIndex;
+                    });
+                    return (
                       <div key={dayIndex} className="relative">
-                        {HOURS.map((hour) => (
-                            <TimeSlot
-                                key={`${dayIndex}-${hour}`}
-                                day={dayIndex}
-                                hour={hour}
-                                onDrop={handleDrop}
-                            />
+                        {hours.map((hour) => (
+                          <TimeSlot
+                            key={`${dayIndex}-${hour}`}
+                            day={dayIndex}
+                            hour={hour}
+                            appointmentsDay={dayAppointments}
+                            openHour={openHour}
+                            closeHour={Number(settings.closeTime.split(':')[0])}
+                            onDrop={handleDrop}
+                          />
                         ))}
-
-                        {/* Appointments */}
                         <div className="absolute inset-0 pointer-events-none">
-                          {appointments
-                              .filter((apt) => {
-                                const today = new Date();
-                                const dayOfWeek = (today.getDay() + 6) % 7;
-                                const start = new Date(today);
-                                start.setDate(today.getDate() - dayOfWeek + currentWeek * 7);
-                                const dateStr = ctxAppointments.find(a => a.id === apt.id)?.date;
-                                if (!dateStr) return apt.day === dayIndex;
-                                const d = new Date(dateStr + 'T00:00:00');
-                                const diffDays = Math.floor((d.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-                                return diffDays === dayIndex;
-                              })
-                              .map((apt) => (
-                                  <div
-                                      key={apt.id}
-                                      className="absolute left-1 right-1 pointer-events-auto"
-                                      style={{
-                                        top: `${(apt.startHour - 8) * 60}px`,
-                                      }}
-                                  >
-                                    <AppointmentCard
-                                        appointment={apt}
-                                        onClick={(a) => {
-                                          const full = ctxAppointments.find(x => x.id === a.id) || a as any;
-                                          onAppointmentClick(full);
-                                        }}
-                                    />
-                                  </div>
-                              ))}
+                          {dayAppointments.map((apt) => (
+                            <div
+                              key={apt.id}
+                              className="absolute left-1 right-1 pointer-events-auto"
+                              style={{ top: `${(apt.startHour - openHour) * 60}px` }}
+                            >
+                              <AppointmentCard
+                                appointment={apt}
+                                onClick={(a) => {
+                                  const full = ctxAppointments.find(x => x.id === a.id) || a as any;
+                                  onAppointmentClick(full);
+                                }}
+                              />
+                            </div>
+                          ))}
                         </div>
                       </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>

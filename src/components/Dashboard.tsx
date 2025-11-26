@@ -71,8 +71,18 @@ type DashboardProps = {
 
 export function Dashboard({ onGoToAppointments }: DashboardProps) {
   const [isNewOpen, setIsNewOpen] = useState(false);
-  const { appointments } = useAppData();
-  const stats = useMemo(() => computeStats(appointments), [appointments]);
+  const { appointments, settings } = useAppData();
+  const statsBase = useMemo(() => computeStats(appointments), [appointments]);
+  const currencySymbol = (c: string) => c.includes('€') ? '€' : (c.includes('$') ? '$' : '$');
+  const stats = useMemo(() => {
+    return statsBase.map(s => {
+      if (s.label === 'Ingresos del Mes') {
+        const num = s.value.replace(/[^0-9.]/g, '');
+        return { ...s, value: `${currencySymbol(settings.currency)}${num}` };
+      }
+      return s;
+    });
+  }, [statsBase, settings.currency]);
   const recent = useMemo(() => {
     return appointments
       .slice()

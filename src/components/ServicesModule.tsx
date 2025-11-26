@@ -9,7 +9,8 @@ import { NewServiceModal } from './NewServiceModal';
 import { EditServiceModal } from './EditServiceModal';
 
 export function ServicesModule() {
-  const { services, deleteService, updateService } = useAppData();
+  const { services, deleteService, updateService, settings } = useAppData();
+  const currencySymbol = (c: string) => c.includes('€') ? '€' : (c.includes('$') ? '$' : '$');
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [editingService, setEditingService] = useState<any | null>(null);
   const [isNewOpen, setIsNewOpen] = useState(false);
@@ -118,7 +119,7 @@ const categories = ['Todos', 'Peluquería', 'Coloración', 'Estética', 'Bienest
                     </div>
                     <div className="flex items-center gap-2">
                       <DollarSign className="w-4 h-4 text-teal-600 dark:text-teal-400" />
-                      <span className="text-slate-900 dark:text-slate-100">{service.price}</span>
+                      <span className="text-slate-900 dark:text-slate-100">{service.price.replace('$', currencySymbol(settings.currency))}</span>
                     </div>
                   </div>
                 </div>

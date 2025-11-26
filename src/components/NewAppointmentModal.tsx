@@ -13,7 +13,7 @@ interface NewAppointmentModalProps {
 }
 
 export function NewAppointmentModal({ isOpen, onClose }: NewAppointmentModalProps) {
-  const { addAppointment, employees, services } = useAppData();
+  const { addAppointment, employees, services, settings } = useAppData();
   
   const [formData, setFormData] = useState({
     client: '',
@@ -22,7 +22,7 @@ export function NewAppointmentModal({ isOpen, onClose }: NewAppointmentModalProp
     employee: '',
     date: '',
     time: '',
-    duration: '1h',
+    duration: `${Math.max(15, settings.slotDurationMinutes)}min`,
     status: 'pending',
     price: '$0',
   });

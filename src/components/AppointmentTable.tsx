@@ -30,7 +30,8 @@ interface AppointmentTableProps {
 }
 
 export function AppointmentTable({ onAppointmentClick, filters }: AppointmentTableProps) {
-  const { appointments, deleteAppointment } = useAppData();
+  const { appointments, deleteAppointment, settings } = useAppData();
+  const currencySymbol = (c: string) => c.includes('€') ? '€' : (c.includes('$') ? '$' : '$');
   const normalized = appointments.filter(a => {
     const statusOk = !filters?.statuses?.length || filters.statuses.includes(a.status);
     const q = (filters?.q || '').toLowerCase();
@@ -105,7 +106,7 @@ export function AppointmentTable({ onAppointmentClick, filters }: AppointmentTab
                     </div>
                   </td>
                   <td className="p-4">
-                    <p className="text-slate-900 dark:text-white">{appointment.price}</p>
+                    <p className="text-slate-900 dark:text-white">{appointment.price.replace('$', currencySymbol(settings.currency))}</p>
                   </td>
                   
                 </motion.tr>

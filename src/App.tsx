@@ -61,6 +61,8 @@ interface AppContextType {
   addService: (service: Omit<Service, 'id'>) => void;
   updateService: (id: number, service: Partial<Service>) => void;
   deleteService: (id: number) => void;
+  settings: Settings;
+  updateSettings: (partial: Partial<Settings>) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -86,6 +88,30 @@ export default function App() {
   const [services, setServices] = useState<Service[]>(() => {
     const saved = localStorage.getItem('services');
     return saved ? JSON.parse(saved) : initialServices as any;
+  });
+  const [settings, setSettings] = useState<Settings>(() => {
+    const saved = localStorage.getItem('settings');
+    if (saved) return JSON.parse(saved);
+    return {
+      firstName: 'Admin',
+      lastName: 'Usuario',
+      email: 'admin@ejemplo.com',
+      phone: '+34 600 000 000',
+      businessName: 'SquareUp',
+      timezone: 'Europe/Madrid (GMT+1)',
+      currency: 'EUR (€)',
+      openTime: '08:00',
+      closeTime: '20:00',
+      slotDurationMinutes: 30,
+      notifications: {
+        emailEnabled: true,
+        pushEnabled: true,
+        remindersEnabled: true,
+        weeklySummaryEnabled: false,
+      },
+      appearance: { theme: 'light' },
+      security: { twoFAEnabled: false },
+    };
   });
 
   const addAppointment = (appointment: Omit<Appointment, 'id'>) => {
@@ -119,6 +145,10 @@ export default function App() {
     setServices([{ ...service, id: newId }, ...services]);
   };
 
+  const updateSettings = (partial: Partial<Settings>) => {
+    setSettings(prev => ({ ...prev, ...partial, notifications: { ...prev.notifications, ...(partial.notifications || {}) }, appearance: { ...prev.appearance, ...(partial.appearance || {}) }, security: { ...prev.security, ...(partial.security || {}) } }));
+  };
+
   const updateService = (id: number, updatedData: Partial<Service>) => {
     setServices(services.map(srv => srv.id === id ? { ...srv, ...updatedData } : srv));
   };
@@ -140,6 +170,8 @@ export default function App() {
     addService,
     updateService,
     deleteService,
+    settings,
+    updateSettings,
   };
 
   useEffect(() => {
@@ -151,6 +183,9 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('services', JSON.stringify(services));
   }, [services]);
+  useEffect(() => {
+    localStorage.setItem('settings', JSON.stringify(settings));
+  }, [settings]);
 
   return (
     <ThemeProvider>
@@ -163,4 +198,28 @@ export default function App() {
       </AppContext.Provider>
     </ThemeProvider>
   );
+}
+interface Settings {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  businessName: string;
+  timezone: string;
+  currency: string; // e.g., "EUR (€)", "USD ($)"
+  openTime: string; // HH:mm
+  closeTime: string; // HH:mm
+  slotDurationMinutes: number;
+  notifications: {
+    emailEnabled: boolean;
+    pushEnabled: boolean;
+    remindersEnabled: boolean;
+    weeklySummaryEnabled: boolean;
+  };
+  appearance: {
+    theme: 'light' | 'dark';
+  };
+  security: {
+    twoFAEnabled: boolean;
+  };
 }

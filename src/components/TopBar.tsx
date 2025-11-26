@@ -60,17 +60,19 @@ const viewTitles: Record<ViewType, string> = {
 
 interface TopBarProps {
   currentView: ViewType;
-  onLogout?: () => void
+  onLogout?: () => void;
+  onGoToNotifications?: () => void;
 }
 
-export function TopBar({ currentView, onLogout }: TopBarProps) {
+export function TopBar({ currentView, onLogout, onGoToNotifications }: TopBarProps) {
   const { theme, toggleTheme } = useTheme();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
 
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const [notifList, setNotifList] = useState<Notification[]>(notifications);
+  const unreadCount = notifList.filter(n => !n.read).length;
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -129,7 +131,10 @@ export function TopBar({ currentView, onLogout }: TopBarProps) {
                 <div className="p-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
                   <h3 className="text-slate-900 dark:text-white">Notificaciones</h3>
                   {unreadCount > 0 && (
-                    <button className="text-teal-600 dark:text-teal-400 text-sm hover:text-teal-700 dark:hover:text-teal-300">
+                    <button
+                      className="text-teal-600 dark:text-teal-400 text-sm hover:text-teal-700 dark:hover:text-teal-300"
+                      onClick={() => setNotifList(prev => prev.map(n => ({ ...n, read: true })))}
+                    >
                       Marcar todas como leídas
                     </button>
                   )}
@@ -137,9 +142,10 @@ export function TopBar({ currentView, onLogout }: TopBarProps) {
 
                 {/* Notifications List */}
                 <div className="max-h-96 overflow-y-auto">
-                  {notifications.map((notification) => (
+                  {notifList.map((notification) => (
                     <div
                       key={notification.id}
+                      onClick={() => setNotifList(prev => prev.map(n => n.id === notification.id ? { ...n, read: true } : n))}
                       className={`p-4 border-b border-slate-100 dark:border-slate-700 last:border-b-0 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors ${
                         !notification.read ? 'bg-teal-50/50 dark:bg-teal-900/10' : ''
                       }`}
@@ -173,7 +179,13 @@ export function TopBar({ currentView, onLogout }: TopBarProps) {
 
                 {/* Footer */}
                 <div className="p-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
-                  <button className="w-full text-center text-teal-600 dark:text-teal-400 text-sm hover:text-teal-700 dark:hover:text-teal-300 py-2">
+                  <button
+                    className="w-full text-center text-teal-600 dark:text-teal-400 text-sm hover:text-teal-700 dark:hover:text-teal-300 py-2"
+                    onClick={() => {
+                      setShowNotifications(false);
+                      onGoToNotifications?.();
+                    }}
+                  >
                     Ver todas las notificaciones
                   </button>
                 </div>
