@@ -45,14 +45,12 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
                 initial={{ scale: 0.9 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.2, duration: 0.4 }}
-                className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-500 to-marine-500 mb-6 macos-shadow-lg"
+                className="inline-flex items-center justify-center mb-3"
               >
-                <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
+                <img src="/logo.png" alt="SquareUp" className="w-16 h-16 object-contain" />
               </motion.div>
-              <h1 className="text-slate-900 dark:text-white mb-2">Gestor de Citas</h1>
-              <p className="text-slate-600 dark:text-slate-400">Panel de Administración</p>
+              <img src="/Nombre (2).png" alt="SquareUp Nombre" className="mx-auto h-8 object-contain" />
+              <p className="text-slate-600 dark:text-slate-400 mt-2">Panel de Administración</p>
             </div>
 
             {/* Form */}
@@ -103,15 +101,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
             </div>
           </div>
 
-          {/* Demo hint */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
-            className="text-center mt-6 text-slate-600 dark:text-slate-400 text-sm"
-          >
-            Demo
-          </motion.p>
+          
         </motion.div>
       </div>
     </div>

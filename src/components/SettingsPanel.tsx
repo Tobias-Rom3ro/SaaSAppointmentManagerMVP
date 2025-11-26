@@ -212,7 +212,7 @@ export function SettingsPanel() {
                   <Label htmlFor="businessName" className="text-slate-700 dark:text-slate-200">Nombre del Negocio</Label>
                   <Input
                       id="businessName"
-                      defaultValue="Gestor de Citas"
+                      defaultValue="La Estación"
                       className="h-11 rounded-xl
                              bg-slate-50 dark:bg-slate-800
                              border-slate-200 dark:border-slate-700

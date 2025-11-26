@@ -52,7 +52,7 @@ export function Sidebar({ currentView, onViewChange }: SidebarProps) {
 
       {/* Header */}
       <div className="p-8 border-b border-slate-200 dark:border-slate-700">
-        <div className="flex items-center gap-3">
+        <div className={`flex items-center ${isCollapsed ? 'justify-center gap-0' : 'gap-3'}`}>
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-marine-500 flex items-center justify-center macos-shadow flex-shrink-0">
             <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -65,15 +65,15 @@ export function Sidebar({ currentView, onViewChange }: SidebarProps) {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
             >
-              <h3 className="text-slate-900 dark:text-white whitespace-nowrap">Gestor de Citas</h3>
-              <p className="text-slate-500 dark:text-slate-400 text-xs whitespace-nowrap">v1.0 MVP</p>
+              <h3 className="text-slate-900 dark:text-white whitespace-nowrap">La Estación</h3>
+              <p className="text-slate-500 dark:text-slate-400 text-xs whitespace-nowrap">Barbershop</p>
             </motion.div>
           )}
         </div>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-1">
+      <nav className="flex-1 p-4 flex flex-col gap-1">
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = currentView === item.id;
@@ -82,7 +82,7 @@ export function Sidebar({ currentView, onViewChange }: SidebarProps) {
             <motion.button
               key={item.id}
               onClick={() => onViewChange(item.id)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 relative group ${
+              className={`w-full flex items-center ${isCollapsed ? 'justify-center gap-0 px-0' : 'gap-3 px-4'} py-3 rounded-xl transition-all duration-200 relative group ${
                 isActive
                   ? 'bg-gradient-to-r from-teal-500 to-marine-500 text-white macos-shadow'
                   : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white'
@@ -114,6 +114,11 @@ export function Sidebar({ currentView, onViewChange }: SidebarProps) {
             </motion.button>
           );
         })}
+        {isCollapsed && (
+          <div className="mt-auto flex justify-center pt-4">
+            <img src="/logo.png" alt="SquareUp" className="w-6 h-6 object-contain" />
+          </div>
+        )}
       </nav>
 
       {/* Footer Info */}
@@ -126,10 +131,13 @@ export function Sidebar({ currentView, onViewChange }: SidebarProps) {
           className="p-4 border-t border-slate-200 dark:border-slate-700"
         >
           <div className="px-4 py-3 bg-gradient-to-br from-teal-50 to-marine-50 dark:from-teal-900/20 dark:to-marine-900/20 rounded-xl">
-            <p className="text-slate-900 dark:text-white text-sm mb-1">Panel MVP</p>
-            <p className="text-slate-600 dark:text-slate-400 text-xs">
-              Todos los derechos reservados.
-            </p>
+            <div className="flex items-center gap-3">
+              <img src="/logo.png" alt="SquareUp" className="w-5 h-5 object-contain" />
+              <div>
+                <p className="text-slate-900 dark:text-white text-sm mb-1">SquareUp</p>
+                <p className="text-slate-600 dark:text-slate-400 text-xs">Todos los derechos reservados.</p>
+              </div>
+            </div>
           </div>
         </motion.div>
       )}
