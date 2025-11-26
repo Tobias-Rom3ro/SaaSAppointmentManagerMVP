@@ -1,41 +1,35 @@
+import { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { Calendar, Users, DollarSign, TrendingUp, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import { Card } from './ui/card';
+import { NewAppointmentModal } from './NewAppointmentModal';
+import { useAppData } from '../App';
 
-const stats = [
-  {
-    label: 'Citas Hoy',
-    value: '24',
-    change: '+12%',
-    trend: 'up',
-    icon: Calendar,
-    color: 'teal',
-  },
-  {
-    label: 'Clientes Activos',
-    value: '342',
-    change: '+8%',
-    trend: 'up',
-    icon: Users,
-    color: 'marine',
-  },
-  {
-    label: 'Ingresos del Mes',
-    value: '$12,450',
-    change: '+23%',
-    trend: 'up',
-    icon: DollarSign,
-    color: 'teal',
-  },
-  {
-    label: 'Tasa de Ocupación',
-    value: '87%',
-    change: '+5%',
-    trend: 'up',
-    icon: TrendingUp,
-    color: 'marine',
-  },
-];
+function computeStats(appointments: any[]) {
+  const today = new Date().toISOString().slice(0, 10);
+  const citasHoy = appointments.filter(a => a.date === today).length;
+  const clientesActivos = new Set(appointments.map(a => a.client)).size;
+  const ingresosMes = appointments.reduce((sum, a) => {
+    const n = parseFloat(String(a.price).replace('$', ''));
+    return sum + (isNaN(n) ? 0 : n);
+  }, 0);
+  const horasAgendadas = appointments.reduce((sum, a) => {
+    const d = String(a.duration);
+    if (d.includes('1.5')) return sum + 1.5;
+    if (d.includes('2')) return sum + 2;
+    if (d.includes('min')) { const n = parseFloat(d); return sum + (isNaN(n) ? 0 : n / 60); }
+    if (d.includes('hora')) return sum + 1;
+    const num = parseFloat(d); return sum + (isNaN(num) ? 0 : num);
+  }, 0);
+  const capacidadSemanal = 13 * 7;
+  const ocupacion = Math.min(100, Math.round((horasAgendadas / capacidadSemanal) * 100));
+  return [
+    { label: 'Citas Hoy', value: String(citasHoy), change: '+0%', trend: 'up', icon: Calendar, color: 'teal' },
+    { label: 'Clientes Activos', value: String(clientesActivos), change: '+0%', trend: 'up', icon: Users, color: 'marine' },
+    { label: 'Ingresos del Mes', value: `$${ingresosMes.toFixed(0)}`, change: '+0%', trend: 'up', icon: DollarSign, color: 'teal' },
+    { label: 'Tasa de Ocupación', value: `${ocupacion}%`, change: '+0%', trend: 'up', icon: TrendingUp, color: 'marine' },
+  ];
+}
 
 const recentAppointments = [
   { id: 1, client: 'María González', service: 'Corte de Cabello', time: '09:00', status: 'completed', employee: 'Ana Martínez' },
@@ -60,8 +54,12 @@ const getStatusConfig = (status: string) => {
       return { label: 'En Progreso', color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400', icon: Clock };
     case 'pending':
       return { label: 'Pendiente', color: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400', icon: AlertCircle };
+    case 'confirmed':
+      return { label: 'Confirmada', color: 'bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400', icon: CheckCircle };
     case 'cancelled':
       return { label: 'Cancelada', color: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400', icon: XCircle };
+    case 'no-show':
+      return { label: 'No se presentó', color: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400', icon: XCircle };
     default:
       return { label: status, color: 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300', icon: AlertCircle };
   }
@@ -72,6 +70,24 @@ type DashboardProps = {
 };
 
 export function Dashboard({ onGoToAppointments }: DashboardProps) {
+  const [isNewOpen, setIsNewOpen] = useState(false);
+  const { appointments } = useAppData();
+  const stats = useMemo(() => computeStats(appointments), [appointments]);
+  const recent = useMemo(() => {
+    return appointments
+      .slice()
+      .sort((a,b) => new Date(`${b.date}T${b.time||'00:00'}`).getTime() - new Date(`${a.date}T${a.time||'00:00'}`).getTime())
+      .slice(0,5)
+      .map(a => ({ id: a.id, client: a.client, service: a.service, time: a.time || '', status: a.status, employee: a.employee }));
+  }, [appointments]);
+  const upcoming = useMemo(() => {
+    const now = new Date().getTime();
+    return appointments
+      .filter(a => new Date(`${a.date}T${a.time||'00:00'}`).getTime() >= now)
+      .sort((a,b) => new Date(`${a.date}T${a.time||'00:00'}`).getTime() - new Date(`${b.date}T${b.time||'00:00'}`).getTime())
+      .slice(0,4)
+      .map(a => ({ time: a.time || '', client: a.client, service: a.service }));
+  }, [appointments]);
   return (
     <div className="p-8 space-y-8">
       {/* Header */}
@@ -117,7 +133,7 @@ export function Dashboard({ onGoToAppointments }: DashboardProps) {
           <Card className="p-6 macos-shadow border-0 bg-white dark:bg-slate-800">
             <h3 className="text-slate-900 dark:text-white mb-6">Citas Recientes</h3>
             <div className="space-y-3">
-              {recentAppointments.map((appointment) => {
+              {recent.map((appointment) => {
                 const statusConfig = getStatusConfig(appointment.status);
                 const StatusIcon = statusConfig.icon;
                 
@@ -155,7 +171,7 @@ export function Dashboard({ onGoToAppointments }: DashboardProps) {
           <Card className="p-6 macos-shadow border-0 bg-white dark:bg-slate-800">
             <h3 className="text-slate-900 dark:text-white mb-6">Próximas Citas</h3>
             <div className="space-y-4">
-              {upcomingAppointments.map((appointment, index) => (
+              {upcoming.map((appointment, index) => (
                 <motion.div
                   key={index}
                   className="flex gap-4"
@@ -191,6 +207,7 @@ export function Dashboard({ onGoToAppointments }: DashboardProps) {
               className="px-6 py-3 bg-white text-teal-600 rounded-xl macos-shadow hover:bg-slate-50 transition-colors"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => setIsNewOpen(true)}
             >
               Nueva Cita
             </motion.button>
@@ -205,6 +222,7 @@ export function Dashboard({ onGoToAppointments }: DashboardProps) {
           </div>
         </div>
       </Card>
+      <NewAppointmentModal isOpen={isNewOpen} onClose={() => setIsNewOpen(false)} />
     </div>
   );
 }

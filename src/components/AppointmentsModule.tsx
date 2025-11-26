@@ -7,6 +7,7 @@ import { Button } from './ui/button';
 import { AppointmentCalendar } from './AppointmentCalendar';
 import { AppointmentTable } from './AppointmentTable';
 import { AppointmentModal } from './AppointmentModal';
+import { NewAppointmentModal } from './NewAppointmentModal';
 
 type ViewMode = 'calendar' | 'table';
 
@@ -14,6 +15,18 @@ export function AppointmentsModule() {
   const [viewMode, setViewMode] = useState<ViewMode>('calendar');
   const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isNewOpen, setIsNewOpen] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [statusFilters, setStatusFilters] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const statusLabels: Record<string, string> = {
+    pending: 'Pendiente',
+    confirmed: 'Confirmada',
+    'in-progress': 'En Progreso',
+    completed: 'Completada',
+    cancelled: 'Cancelada',
+    'no-show': 'No se presentó',
+  };
 
   const handleAppointmentClick = (appointment: any) => {
     setSelectedAppointment(appointment);
@@ -29,7 +42,7 @@ export function AppointmentsModule() {
           <p className="text-slate-600 dark:text-slate-400">Administra y programa citas de tus clientes</p>
         </div>
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <Button className="bg-gradient-to-r from-teal-500 to-marine-500 hover:from-teal-600 hover:to-marine-600 text-white px-6 h-11 rounded-xl macos-shadow">
+          <Button onClick={() => setIsNewOpen(true)} className="bg-gradient-to-r from-teal-500 to-marine-500 hover:from-teal-600 hover:to-marine-600 text-white px-6 h-11 rounded-xl macos-shadow">
             <Plus className="w-5 h-5 mr-2" />
             Nueva Cita
           </Button>
@@ -45,9 +58,11 @@ export function AppointmentsModule() {
               <Input
                 placeholder="Buscar citas, clientes, servicios..."
                 className="pl-10 h-10 bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder:text-slate-400"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <Button variant="outline" className="h-10 px-4 rounded-xl border-slate-200 dark:border-slate-600 dark:text-slate-300">
+            <Button variant="outline" className="h-10 px-4 rounded-xl border-slate-200 dark:border-slate-600 dark:text-slate-300" onClick={() => setShowFilters(!showFilters)}>
               <Filter className="w-4 h-4 mr-2" />
               Filtros
             </Button>
@@ -77,6 +92,17 @@ export function AppointmentsModule() {
           </div>
         </div>
       </Card>
+      {showFilters && (
+        <Card className="p-4 macos-shadow border-0 bg-white dark:bg-slate-800">
+          <div className="flex items-center gap-2 flex-wrap">
+            {['pending','confirmed','in-progress','completed','cancelled','no-show'].map(s => (
+              <button key={s} onClick={() => setStatusFilters(prev => prev.includes(s) ? prev.filter(x=>x!==s) : [...prev, s])} className={`px-3 py-1.5 rounded-lg border ${statusFilters.includes(s) ? 'bg-teal-50 border-teal-200 text-teal-700' : 'bg-white border-slate-200 text-slate-700 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-300'}`}>
+                {statusLabels[s]}
+              </button>
+            ))}
+          </div>
+        </Card>
+      )}
 
       {/* View Content */}
       <motion.div
@@ -86,9 +112,9 @@ export function AppointmentsModule() {
         transition={{ duration: 0.3 }}
       >
         {viewMode === 'calendar' ? (
-          <AppointmentCalendar onAppointmentClick={handleAppointmentClick} />
+          <AppointmentCalendar onAppointmentClick={handleAppointmentClick} filters={{ statuses: statusFilters, q: searchQuery }} />
         ) : (
-          <AppointmentTable onAppointmentClick={handleAppointmentClick} />
+          <AppointmentTable onAppointmentClick={handleAppointmentClick} filters={{ statuses: statusFilters, q: searchQuery }} />
         )}
       </motion.div>
 
@@ -98,6 +124,7 @@ export function AppointmentsModule() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
+      <NewAppointmentModal isOpen={isNewOpen} onClose={() => setIsNewOpen(false)} />
     </div>
   );
 }

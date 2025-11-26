@@ -13,75 +13,16 @@ import {
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-
-interface Employee {
-  id: number;
-  name: string;
-  role: string;
-  email: string;
-  phone: string;
-  specialties: string[];
-  rating: number;
-  appointmentsToday: number;
-  avatar: string;
-  status: "active" | "inactive";
-}
-
-const employees: Employee[] = [
-  {
-    id: 1,
-    name: "Ana Martínez",
-    role: "Estilista Senior",
-    email: "ana.martinez@ejemplo.com",
-    phone: "+34 600 111 111",
-    specialties: ["Corte", "Peinado", "Barba"],
-    rating: 4.9,
-    appointmentsToday: 8,
-    avatar: "A",
-    status: "active",
-  },
-  {
-    id: 2,
-    name: "Pedro López",
-    role: "Masajista Profesional",
-    email: "pedro.lopez@ejemplo.com",
-    phone: "+34 600 222 222",
-    specialties: ["Masaje Relajante", "Masaje Deportivo"],
-    rating: 4.8,
-    appointmentsToday: 6,
-    avatar: "P",
-    status: "active",
-  },
-  {
-    id: 3,
-    name: "Sofia Torres",
-    role: "Especialista en Estética",
-    email: "sofia.torres@ejemplo.com",
-    phone: "+34 600 333 333",
-    specialties: ["Manicura", "Pedicura", "Facial"],
-    rating: 4.7,
-    appointmentsToday: 7,
-    avatar: "S",
-    status: "active",
-  },
-  {
-    id: 4,
-    name: "María Flores",
-    role: "Colorista",
-    email: "maria.flores@ejemplo.com",
-    phone: "+34 600 444 444",
-    specialties: ["Tinte", "Mechas", "Balayage"],
-    rating: 4.9,
-    appointmentsToday: 5,
-    avatar: "M",
-    status: "active",
-  },
-];
+import { useAppData } from "../App";
+import { NewEmployeeModal } from "./NewEmployeeModal";
+import { EditEmployeeModal } from "./EditEmployeeModal";
 
 export function EmployeesModule() {
+  const { employees, deleteEmployee } = useAppData();
   const [selectedEmployee, setSelectedEmployee] =
-    useState<Employee | null>(null);
+    useState<any | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isNewOpen, setIsNewOpen] = useState(false);
 
   return (
     <div className="p-8 space-y-6">
@@ -99,7 +40,7 @@ export function EmployeesModule() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          <Button className="bg-gradient-to-r from-teal-500 to-marine-500 hover:from-teal-600 hover:to-marine-600 text-white px-6 h-11 rounded-xl macos-shadow">
+          <Button onClick={() => setIsNewOpen(true)} className="bg-gradient-to-r from-teal-500 to-marine-500 hover:from-teal-600 hover:to-marine-600 text-white px-6 h-11 rounded-xl macos-shadow">
             <Plus className="w-5 h-5 mr-2" />
             Nuevo Empleado
           </Button>
@@ -144,10 +85,10 @@ export function EmployeesModule() {
                   />
                 </div>
                 <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
-                  <button className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                  <button className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors" onClick={() => { setSelectedEmployee(employee); setIsEditing(true); }}>
                     <Edit2 className="w-4 h-4 text-slate-600 dark:text-slate-400" />
                   </button>
-                  <button className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
+                  <button className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" onClick={() => deleteEmployee(employee.id)}>
                     <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
                   </button>
                 </div>
@@ -271,7 +212,7 @@ export function EmployeesModule() {
             </div>
             <div>
               <h3 className="text-slate-900 dark:text-white mb-1">
-                {employees.length}
+                {employees.filter(e => e.status === 'active').length}
               </h3>
               <p className="text-slate-600 dark:text-slate-400 text-sm">
                 Empleados Activos
@@ -280,6 +221,8 @@ export function EmployeesModule() {
           </div>
         </Card>
       </div>
+      <NewEmployeeModal isOpen={isNewOpen} onClose={() => setIsNewOpen(false)} />
+      <EditEmployeeModal isOpen={isEditing} onClose={() => setIsEditing(false)} employee={selectedEmployee} />
     </div>
   );
 }

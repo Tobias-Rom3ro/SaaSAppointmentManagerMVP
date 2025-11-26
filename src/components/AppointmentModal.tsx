@@ -2,6 +2,10 @@ import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { X, Calendar as CalendarIcon, Clock, User, Briefcase, Phone, Mail, DollarSign, Edit2, Trash2 } from 'lucide-react'
 import { Button } from './ui/button'
+import { useState } from 'react'
+import { useAppData } from '../App'
+import { ConfirmCancelModal } from './ConfirmCancelModal'
+import { EditAppointmentModal } from './EditAppointmentModal'
 
 interface AppointmentModalProps {
   appointment: any
@@ -10,7 +14,38 @@ interface AppointmentModalProps {
 }
 
 export function AppointmentModal({ appointment, isOpen, onClose }: AppointmentModalProps) {
+  const { updateAppointment } = useAppData()
+  const [showConfirmCancel, setShowConfirmCancel] = useState(false)
+  const [showEdit, setShowEdit] = useState(false)
   if (!appointment) return null
+  const statusLabel: Record<string, string> = {
+    pending: 'Pendiente',
+    confirmed: 'Confirmada',
+    'in-progress': 'En Progreso',
+    completed: 'Completada',
+    cancelled: 'Cancelada',
+    'no-show': 'No se presentó',
+  }
+  const statusClass: Record<string, string> = {
+    pending: 'bg-amber-100 text-amber-700',
+    confirmed: 'bg-teal-100 text-teal-700',
+    'in-progress': 'bg-marine-100 text-marine-700',
+    completed: 'bg-emerald-100 text-emerald-700',
+    cancelled: 'bg-red-100 text-red-700',
+    'no-show': 'bg-red-100 text-red-700',
+  }
+  const s = appointment.status as string
+  const isPending = s === 'pending'
+  const isInProgress = s === 'in-progress'
+  const isCompleted = s === 'completed'
+  const isCancelled = s === 'cancelled'
+  const isNoShow = s === 'no-show'
+  const disableAll = isCompleted || isCancelled || isNoShow
+  const confirmDisabled = !isPending
+  const completeDisabled = !(isInProgress || s === 'confirmed')
+  const noShowDisabled = disableAll || isInProgress
+  const cancelDisabled = disableAll || isInProgress
+  const editDisabled = disableAll || isInProgress
   return createPortal(
       <AnimatePresence>
         {isOpen && (
@@ -32,10 +67,10 @@ export function AppointmentModal({ appointment, isOpen, onClose }: AppointmentMo
                     exit={{ opacity: 0, scale: 0.95, y: 8 }}
                     transition={{ type: 'spring', duration: 0.45 }}
                     className="
-                w-full max-w-lg sm:max-w-xl md:max-w-2xl
+                w-full max-w-lg sm:max-w-xl md:max-w-3xl lg:max-w-4xl
                 bg-white dark:bg-slate-800 rounded-3xl macos-shadow-xl overflow-hidden
-                max-h-[90vh]  /* 🔹 no excede la pantalla */
-                flex flex-col  /* 🔹 para tener header/sticky + scroll interno */
+                max-h-[90vh]
+                flex flex-col
               "
                 >
                   {/* Header (sticky para que el botón cerrar siempre esté visible) */}
@@ -61,6 +96,9 @@ export function AppointmentModal({ appointment, isOpen, onClose }: AppointmentMo
                       <div>
                         <h3 className="mb-0.5">{appointment.client || 'Cliente'}</h3>
                         <p className="text-white/80 text-sm sm:text-base">{appointment.email || 'email@ejemplo.com'}</p>
+                        <span className={`inline-flex items-center px-2 py-1 rounded-lg text-xs mt-2 ${statusClass[appointment.status] || 'bg-slate-100 text-slate-700'}`}>
+                          {statusLabel[appointment.status] || appointment.status}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -167,20 +205,41 @@ export function AppointmentModal({ appointment, isOpen, onClose }: AppointmentMo
                   <div className="p-5 sm:p-6 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-end gap-3 sticky bottom-0">
                     <Button
                         variant="outline"
+                        disabled={cancelDisabled}
                         className="px-6 h-11 rounded-xl border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                        onClick={() => setShowConfirmCancel(true)}
                     >
                       <Trash2 className="w-4 h-4 mr-2" />
                       Cancelar Cita
                     </Button>
-                    <Button className="px-6 h-11 bg-gradient-to-r from-teal-500 to-marine-500 hover:from-teal-600 hover:to-marine-600 text-white rounded-xl macos-shadow">
+                    <Button variant="outline" disabled={confirmDisabled || disableAll} className="px-6 h-11 rounded-xl border-teal-200 dark:border-teal-800 text-teal-700 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-900/20" onClick={() => updateAppointment(appointment.id, { status: 'confirmed' })}>
+                      Confirmar
+                    </Button>
+                    <Button variant="outline" disabled={completeDisabled || disableAll} className="px-6 h-11 rounded-xl border-teal-200 dark:border-teal-800 text-teal-700 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-900/20" onClick={() => updateAppointment(appointment.id, { status: 'completed' })}>
+                      Completar
+                    </Button>
+                    <Button variant="outline" disabled={noShowDisabled} className="px-6 h-11 rounded-xl border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20" onClick={() => updateAppointment(appointment.id, { status: 'no-show', color: 'red' })}>
+                      No se presentó
+                    </Button>
+                    <Button disabled={editDisabled} className="px-6 h-11 bg-gradient-to-r from-teal-500 to-marine-500 hover:from-teal-600 hover:to-marine-600 text-white rounded-xl macos-shadow" onClick={() => setShowEdit(true)}>
                       <Edit2 className="w-4 h-4 mr-2" />
                       Editar Cita
                     </Button>
                   </div>
-                </motion.div>
-              </div>
-            </>
-        )}
+            </motion.div>
+          </div>
+          <ConfirmCancelModal
+            isOpen={showConfirmCancel}
+            onClose={() => setShowConfirmCancel(false)}
+            onConfirm={() => {
+              updateAppointment(appointment.id, { status: 'cancelled' })
+              setShowConfirmCancel(false)
+              onClose()
+            }}
+          />
+          <EditAppointmentModal isOpen={showEdit} onClose={() => setShowEdit(false)} appointment={appointment} />
+        </>
+      )}
       </AnimatePresence>,
       document.body
   )

@@ -1,14 +1,15 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card } from './ui/card';
+import { useAppData } from '../App';
 
 const HOURS = Array.from({ length: 13 }, (_, i) => i + 8); // 8:00 to 20:00
 const DAYS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 
-interface Appointment {
+interface CalendarAppointment {
   id: number;
   client: string;
   service: string;
@@ -20,25 +21,17 @@ interface Appointment {
   color: string;
 }
 
-const initialAppointments: Appointment[] = [
-  { id: 1, client: 'María G.', service: 'Corte', employee: 'Ana M.', day: 0, startHour: 9, duration: 1, status: 'confirmed', color: 'teal' },
-  { id: 2, client: 'Carlos R.', service: 'Masaje', employee: 'Pedro L.', day: 0, startHour: 10.5, duration: 1.5, status: 'confirmed', color: 'marine' },
-  { id: 3, client: 'Laura S.', service: 'Manicura', employee: 'Sofia T.', day: 1, startHour: 11, duration: 1, status: 'pending', color: 'amber' },
-  { id: 4, client: 'Diego M.', service: 'Corte y Barba', employee: 'Ana M.', day: 1, startHour: 14, duration: 1, status: 'confirmed', color: 'teal' },
-  { id: 5, client: 'Elena C.', service: 'Tinte', employee: 'María F.', day: 2, startHour: 15, duration: 2, status: 'confirmed', color: 'marine' },
-  { id: 6, client: 'Roberto D.', service: 'Facial', employee: 'Sofia T.', day: 3, startHour: 10, duration: 1.5, status: 'confirmed', color: 'teal' },
-  { id: 7, client: 'Patricia V.', service: 'Pedicura', employee: 'Ana M.', day: 4, startHour: 13, duration: 1, status: 'pending', color: 'amber' },
-];
-
 interface AppointmentCardProps {
-  appointment: Appointment;
-  onClick: (appointment: Appointment) => void;
+  appointment: CalendarAppointment;
+  onClick: (appointment: CalendarAppointment) => void;
 }
 
 function AppointmentCard({ appointment, onClick }: AppointmentCardProps) {
+  const canDrag = appointment.status !== 'completed' && appointment.status !== 'cancelled' && appointment.status !== 'no-show'
   const [{ isDragging }, dragRef] = useDrag(() => ({
     type: 'appointment',
     item: appointment,
+    canDrag: () => canDrag,
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
@@ -52,6 +45,10 @@ function AppointmentCard({ appointment, onClick }: AppointmentCardProps) {
         return 'bg-marine-500 border-marine-600 text-white';
       case 'amber':
         return 'bg-amber-400 border-amber-500 text-amber-900';
+      case 'emerald':
+        return 'bg-emerald-500 border-emerald-600 text-white';
+      case 'red':
+        return 'bg-red-500 border-red-600 text-white';
       default:
         return 'bg-slate-500 border-slate-600 text-white';
     }
@@ -59,8 +56,8 @@ function AppointmentCard({ appointment, onClick }: AppointmentCardProps) {
 
   return (
       <motion.div
-          ref={dragRef as any}
-          className={`p-2 rounded-lg border-l-4 cursor-move ${getColorClasses(appointment.color)} ${
+          ref={canDrag ? (dragRef as any) : undefined}
+          className={`p-2 rounded-lg border-l-4 ${canDrag ? 'cursor-move' : 'cursor-not-allowed'} ${getColorClasses(appointment.color)} ${
               isDragging ? 'opacity-50' : 'opacity-100'
           } macos-shadow hover:shadow-lg transition-shadow`}
           style={{
@@ -78,13 +75,13 @@ function AppointmentCard({ appointment, onClick }: AppointmentCardProps) {
 interface TimeSlotProps {
   day: number;
   hour: number;
-  onDrop: (appointment: Appointment, day: number, hour: number) => void;
+  onDrop: (appointment: CalendarAppointment, day: number, hour: number) => void;
 }
 
 function TimeSlot({ day, hour, onDrop }: TimeSlotProps) {
   const [{ isOver }, dropRef] = useDrop(() => ({
     accept: 'appointment',
-    drop: (item: Appointment) => onDrop(item, day, hour),
+    drop: (item: CalendarAppointment) => onDrop(item, day, hour),
     collect: (monitor) => ({
       isOver: monitor.isOver(),
     }),
@@ -103,20 +100,63 @@ function TimeSlot({ day, hour, onDrop }: TimeSlotProps) {
 
 interface AppointmentCalendarProps {
   onAppointmentClick: (appointment: any) => void;
+  filters?: { statuses: string[]; q: string };
 }
 
-export function AppointmentCalendar({ onAppointmentClick }: AppointmentCalendarProps) {
-  const [appointments, setAppointments] = useState(initialAppointments);
+export function AppointmentCalendar({ onAppointmentClick, filters }: AppointmentCalendarProps) {
+  const { appointments: ctxAppointments, updateAppointment } = useAppData();
+  const appointments = useMemo<CalendarAppointment[]>(() => {
+    const parseDuration = (d: string) => {
+      if (!d) return 1;
+      if (d.includes('hora')) return 1;
+      if (d.includes('min')) {
+        const n = parseFloat(d);
+        return isNaN(n) ? 1 : n / 60;
+      }
+      if (d.includes('1.5')) return 1.5;
+      if (d.includes('2')) return 2;
+      const num = parseFloat(d);
+      return isNaN(num) ? 1 : num;
+    };
+    const filtered = ctxAppointments.filter(a => {
+      const statusOk = !filters?.statuses?.length || filters.statuses.includes(a.status);
+      const q = (filters?.q || '').toLowerCase();
+      const qOk = !q || [a.client, a.service, a.employee, a.email].some(x => String(x).toLowerCase().includes(q));
+      if (a.status === 'cancelled') return false;
+      return statusOk && qOk;
+    });
+    return filtered.map(a => {
+      const t = a.time || '09:00';
+      const [hh, mm] = t.split(':');
+      const startHour = typeof a.startHour === 'number' ? a.startHour : (parseInt(hh) + (parseInt(mm) || 0) / 60);
+      return {
+        id: a.id,
+        client: a.client,
+        service: a.service,
+        employee: a.employee,
+        day: typeof a.day === 'number' ? a.day : 0,
+        startHour,
+        duration: parseDuration(a.duration),
+        status: a.status,
+        color: a.status === 'no-show' ? 'red' : (a.status === 'completed' ? 'emerald' : (a.color || 'teal')),
+      };
+    });
+  }, [ctxAppointments]);
   const [currentWeek, setCurrentWeek] = useState(0);
 
-  const handleDrop = (appointment: Appointment, newDay: number, newHour: number) => {
-    setAppointments((prev) =>
-        prev.map((apt) =>
-            apt.id === appointment.id
-                ? { ...apt, day: newDay, startHour: newHour }
-                : apt
-        )
-    );
+  const handleDrop = (appointment: CalendarAppointment, newDay: number, newHour: number) => {
+    const today = new Date();
+    const weekStart = new Date(today);
+    const dayOfWeek = (weekStart.getDay() + 6) % 7;
+    weekStart.setDate(weekStart.getDate() - dayOfWeek + currentWeek * 7);
+    const dropDate = new Date(weekStart);
+    dropDate.setDate(weekStart.getDate() + newDay);
+    const y = dropDate.getFullYear();
+    const m = String(dropDate.getMonth() + 1).padStart(2, '0');
+    const d = String(dropDate.getDate()).padStart(2, '0');
+    const hh = String(Math.floor(newHour)).padStart(2, '0');
+    const mm = String(Math.round((newHour % 1) * 60)).padStart(2, '0');
+    updateAppointment(appointment.id, { day: newDay, startHour: newHour, date: `${y}-${m}-${d}`, time: `${hh}:${mm}` });
   };
 
   return (
@@ -124,7 +164,16 @@ export function AppointmentCalendar({ onAppointmentClick }: AppointmentCalendarP
         <Card className="p-6 macos-shadow border-0 bg-white dark:bg-slate-800 overflow-hidden">
           {/* Calendar Header */}
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-slate-900 dark:text-white">Semana del 11 - 17 Nov 2025</h3>
+            {(() => {
+              const today = new Date();
+              const dayOfWeek = (today.getDay() + 6) % 7;
+              const start = new Date(today);
+              start.setDate(today.getDate() - dayOfWeek + currentWeek * 7);
+              const end = new Date(start);
+              end.setDate(start.getDate() + 6);
+              const fmt = (d: Date) => `${d.getDate()} ${d.toLocaleString('es-ES', { month: 'short' })} ${d.getFullYear()}`;
+              return <h3 className="text-slate-900 dark:text-white">Semana del {fmt(start)} - {fmt(end)}</h3>;
+            })()}
             <div className="flex items-center gap-2">
               <button
                   onClick={() => setCurrentWeek(currentWeek - 1)}
@@ -132,7 +181,7 @@ export function AppointmentCalendar({ onAppointmentClick }: AppointmentCalendarP
               >
                 <ChevronLeft className="w-5 h-5 text-slate-600 dark:text-slate-400" />
               </button>
-              <button className="px-4 py-2 rounded-lg bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 hover:bg-teal-100 dark:hover:bg-teal-900/50 transition-colors">
+              <button onClick={() => setCurrentWeek(0)} className="px-4 py-2 rounded-lg bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 hover:bg-teal-100 dark:hover:bg-teal-900/50 transition-colors">
                 Hoy
               </button>
               <button
@@ -150,15 +199,22 @@ export function AppointmentCalendar({ onAppointmentClick }: AppointmentCalendarP
               {/* Days Header */}
               <div className="grid grid-cols-8 border-b border-slate-200 dark:border-slate-700">
                 <div className="p-3 border-r border-slate-200 dark:border-slate-700" />
-                {DAYS.map((day, index) => (
-                    <div
-                        key={day}
-                        className="p-3 text-center border-r border-slate-200 dark:border-slate-700 last:border-r-0"
-                    >
-                      <p className="text-slate-900 dark:text-white">{day}</p>
-                      <p className="text-slate-500 dark:text-slate-400 text-xs">{11 + index} Nov</p>
-                    </div>
-                ))}
+                {(() => {
+                  const today = new Date();
+                  const dayOfWeek = (today.getDay() + 6) % 7;
+                  const start = new Date(today);
+                  start.setDate(today.getDate() - dayOfWeek + currentWeek * 7);
+                  return DAYS.map((day, index) => {
+                    const d = new Date(start);
+                    d.setDate(start.getDate() + index);
+                    return (
+                      <div key={day} className="p-3 text-center border-r border-slate-200 dark:border-slate-700 last:border-r-0">
+                        <p className="text-slate-900 dark:text-white">{day}</p>
+                        <p className="text-slate-500 dark:text-slate-400 text-xs">{d.getDate()} {d.toLocaleString('es-ES', { month: 'short' })}</p>
+                      </div>
+                    );
+                  });
+                })()}
               </div>
 
               {/* Time Grid */}
@@ -191,7 +247,17 @@ export function AppointmentCalendar({ onAppointmentClick }: AppointmentCalendarP
                         {/* Appointments */}
                         <div className="absolute inset-0 pointer-events-none">
                           {appointments
-                              .filter((apt) => apt.day === dayIndex)
+                              .filter((apt) => {
+                                const today = new Date();
+                                const dayOfWeek = (today.getDay() + 6) % 7;
+                                const start = new Date(today);
+                                start.setDate(today.getDate() - dayOfWeek + currentWeek * 7);
+                                const dateStr = ctxAppointments.find(a => a.id === apt.id)?.date;
+                                if (!dateStr) return apt.day === dayIndex;
+                                const d = new Date(dateStr + 'T00:00:00');
+                                const diffDays = Math.floor((d.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+                                return diffDays === dayIndex;
+                              })
                               .map((apt) => (
                                   <div
                                       key={apt.id}
@@ -202,7 +268,10 @@ export function AppointmentCalendar({ onAppointmentClick }: AppointmentCalendarP
                                   >
                                     <AppointmentCard
                                         appointment={apt}
-                                        onClick={onAppointmentClick}
+                                        onClick={(a) => {
+                                          const full = ctxAppointments.find(x => x.id === a.id) || a as any;
+                                          onAppointmentClick(full);
+                                        }}
                                     />
                                   </div>
                               ))}

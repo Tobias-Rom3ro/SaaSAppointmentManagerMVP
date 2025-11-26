@@ -4,116 +4,18 @@ import { Plus, Search, Clock, DollarSign, Edit2, Trash2, Scissors, Sparkles } fr
 import { Card } from './ui/card';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
-
-interface Service {
-  id: number;
-  name: string;
-  category: string;
-  description: string;
-  duration: string;
-  price: string;
-  icon: string;
-  color: string;
-  popular: boolean;
-}
-
-const services: Service[] = [
-  {
-    id: 1,
-    name: 'Corte de Cabello',
-    category: 'Peluquería',
-    description: 'Corte de cabello profesional adaptado a tu estilo',
-    duration: '45 min',
-    price: '$35',
-    icon: 'scissors',
-    color: 'teal',
-    popular: true,
-  },
-  {
-    id: 2,
-    name: 'Corte y Barba',
-    category: 'Peluquería',
-    description: 'Servicio completo de corte de cabello y arreglo de barba',
-    duration: '1 hora',
-    price: '$45',
-    icon: 'scissors',
-    color: 'teal',
-    popular: true,
-  },
-  {
-    id: 3,
-    name: 'Tinte',
-    category: 'Coloración',
-    description: 'Tinte profesional con productos de alta calidad',
-    duration: '2 horas',
-    price: '$80',
-    icon: 'sparkles',
-    color: 'marine',
-    popular: false,
-  },
-  {
-    id: 4,
-    name: 'Mechas',
-    category: 'Coloración',
-    description: 'Mechas y reflejos para iluminar tu cabello',
-    duration: '2.5 horas',
-    price: '$95',
-    icon: 'sparkles',
-    color: 'marine',
-    popular: false,
-  },
-  {
-    id: 5,
-    name: 'Balayage',
-    category: 'Coloración',
-    description: 'Técnica moderna de coloración degradada',
-    duration: '3 horas',
-    price: '$120',
-    icon: 'sparkles',
-    color: 'marine',
-    popular: true,
-  },
-  {
-    id: 6,
-    name: 'Manicura',
-    category: 'Estética',
-    description: 'Cuidado completo de manos y uñas',
-    duration: '45 min',
-    price: '$25',
-    icon: 'sparkles',
-    color: 'teal',
-    popular: false,
-  },
-  {
-    id: 7,
-    name: 'Pedicura',
-    category: 'Estética',
-    description: 'Tratamiento completo para pies y uñas',
-    duration: '1 hora',
-    price: '$30',
-    icon: 'sparkles',
-    color: 'teal',
-    popular: false,
-  },
-  {
-    id: 8,
-    name: 'Masaje Relajante',
-    category: 'Bienestar',
-    description: 'Masaje terapéutico para aliviar tensiones',
-    duration: '1 hora',
-    price: '$60',
-    icon: 'sparkles',
-    color: 'marine',
-    popular: true,
-  },
-];
-
-const categories = ['Todos', 'Peluquería', 'Coloración', 'Estética', 'Bienestar'];
+import { useAppData } from '../App';
+import { NewServiceModal } from './NewServiceModal';
+import { EditServiceModal } from './EditServiceModal';
 
 export function ServicesModule() {
+  const { services, deleteService, updateService } = useAppData();
   const [selectedCategory, setSelectedCategory] = useState('Todos');
-  const [editingService, setEditingService] = useState<number | null>(null);
+  const [editingService, setEditingService] = useState<any | null>(null);
+  const [isNewOpen, setIsNewOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
 
+const categories = ['Todos', 'Peluquería', 'Coloración', 'Estética', 'Bienestar'];
   const filteredServices = selectedCategory === 'Todos'
     ? services
     : services.filter(s => s.category === selectedCategory);
@@ -127,7 +29,7 @@ export function ServicesModule() {
           <p className="text-slate-600 dark:text-slate-400">Administra los servicios que ofreces</p>
         </div>
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <Button className="bg-gradient-to-r from-teal-500 to-marine-500 hover:from-teal-600 hover:to-marine-600 text-white px-6 h-11 rounded-xl macos-shadow">
+          <Button onClick={() => setIsNewOpen(true)} className="bg-gradient-to-r from-teal-500 to-marine-500 hover:from-teal-600 hover:to-marine-600 text-white px-6 h-11 rounded-xl macos-shadow">
             <Plus className="w-5 h-5 mr-2" />
             Nuevo Servicio
           </Button>
@@ -224,7 +126,7 @@ export function ServicesModule() {
                 {/* Actions */}
                 <div className="pt-3 border-t border-slate-100 dark:border-slate-700/60 flex gap-2">
                   <motion.button
-                    onClick={() => setEditingService(service.id)}
+                    onClick={() => { setEditingService(service); setIsEditOpen(true); }}
                     className="flex-1 py-2 px-4 rounded-xl transition-colors flex items-center justify-center gap-2
         bg-slate-50 dark:bg-slate-700 hover:bg-teal-50 dark:hover:bg-slate-600
         text-slate-700 dark:text-slate-200 hover:text-teal-700 dark:hover:text-teal-300"
@@ -239,7 +141,7 @@ export function ServicesModule() {
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                   >
-                    <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
+                    <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" onClick={() => deleteService(service.id)} />
                   </motion.button>
                 </div>
               </div>
@@ -278,6 +180,8 @@ export function ServicesModule() {
           </div>
         </Card>
       </div>
+      <NewServiceModal isOpen={isNewOpen} onClose={() => setIsNewOpen(false)} />
+      <EditServiceModal isOpen={isEditOpen} onClose={() => setIsEditOpen(false)} service={editingService} />
     </div>
   );
 }

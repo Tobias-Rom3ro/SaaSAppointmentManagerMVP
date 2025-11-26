@@ -1,17 +1,9 @@
 import { motion } from 'motion/react';
 import { CheckCircle, Clock, XCircle, AlertCircle, MoreVertical } from 'lucide-react';
 import { Card } from './ui/card';
+import { useAppData } from '../App';
 
-const appointments = [
-  { id: 1, client: 'María González', email: 'maria@ejemplo.com', service: 'Corte de Cabello', employee: 'Ana Martínez', date: '2025-11-11', time: '09:00', duration: '1h', status: 'completed', price: '$35' },
-  { id: 2, client: 'Carlos Ruiz', email: 'carlos@ejemplo.com', service: 'Masaje Relajante', employee: 'Pedro López', date: '2025-11-11', time: '10:30', duration: '1.5h', status: 'in-progress', price: '$60' },
-  { id: 3, client: 'Laura Sánchez', email: 'laura@ejemplo.com', service: 'Manicura', employee: 'Sofia Torres', date: '2025-11-12', time: '11:00', duration: '1h', status: 'pending', price: '$25' },
-  { id: 4, client: 'Diego Morales', email: 'diego@ejemplo.com', service: 'Corte y Barba', employee: 'Ana Martínez', date: '2025-11-12', time: '14:00', duration: '1h', status: 'pending', price: '$45' },
-  { id: 5, client: 'Elena Castro', email: 'elena@ejemplo.com', service: 'Tinte', employee: 'María Flores', date: '2025-11-13', time: '15:00', duration: '2h', status: 'cancelled', price: '$80' },
-  { id: 6, client: 'Roberto Díaz', email: 'roberto@ejemplo.com', service: 'Facial', employee: 'Sofia Torres', date: '2025-11-14', time: '10:00', duration: '1.5h', status: 'confirmed', price: '$55' },
-  { id: 7, client: 'Patricia Vega', email: 'patricia@ejemplo.com', service: 'Pedicura', employee: 'Ana Martínez', date: '2025-11-15', time: '13:00', duration: '1h', status: 'pending', price: '$30' },
-  { id: 8, client: 'Andrés Silva', email: 'andres@ejemplo.com', service: 'Masaje Deportivo', employee: 'Pedro López', date: '2025-11-15', time: '15:00', duration: '1h', status: 'confirmed', price: '$70' },
-];
+// datos de citas vendrán del contexto
 
 const getStatusConfig = (status: string) => {
   switch (status) {
@@ -25,6 +17,8 @@ const getStatusConfig = (status: string) => {
       return { label: 'Confirmada', color: 'bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 border-teal-200 dark:border-teal-700', icon: CheckCircle };
     case 'cancelled':
       return { label: 'Cancelada', color: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-700', icon: XCircle };
+    case 'no-show':
+      return { label: 'No se presentó', color: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-700', icon: XCircle };
     default:
       return { label: status, color: 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-600', icon: AlertCircle };
   }
@@ -32,9 +26,21 @@ const getStatusConfig = (status: string) => {
 
 interface AppointmentTableProps {
   onAppointmentClick: (appointment: any) => void;
+  filters?: { statuses: string[]; q: string };
 }
 
-export function AppointmentTable({ onAppointmentClick }: AppointmentTableProps) {
+export function AppointmentTable({ onAppointmentClick, filters }: AppointmentTableProps) {
+  const { appointments, deleteAppointment } = useAppData();
+  const normalized = appointments.filter(a => {
+    const statusOk = !filters?.statuses?.length || filters.statuses.includes(a.status);
+    const q = (filters?.q || '').toLowerCase();
+    const qOk = !q || [a.client, a.service, a.employee, a.email].some(x => String(x).toLowerCase().includes(q));
+    return statusOk && qOk;
+  }).sort((a,b) => {
+    const ta = new Date(`${a.date}T${a.time || '00:00'}`).getTime();
+    const tb = new Date(`${b.date}T${b.time || '00:00'}`).getTime();
+    return tb - ta;
+  });
   return (
     <Card className="macos-shadow border-0 bg-white dark:bg-slate-800 overflow-hidden">
       <div className="overflow-x-auto">
@@ -49,11 +55,11 @@ export function AppointmentTable({ onAppointmentClick }: AppointmentTableProps) 
               <th className="text-left p-4 text-slate-700 dark:text-slate-300">Duración</th>
               <th className="text-left p-4 text-slate-700 dark:text-slate-300">Estado</th>
               <th className="text-left p-4 text-slate-700 dark:text-slate-300">Precio</th>
-              <th className="text-left p-4 text-slate-700 dark:text-slate-300"></th>
+              
             </tr>
           </thead>
           <tbody>
-            {appointments.map((appointment, index) => {
+            {normalized.map((appointment, index) => {
               const statusConfig = getStatusConfig(appointment.status);
               const StatusIcon = statusConfig.icon;
 
@@ -101,16 +107,7 @@ export function AppointmentTable({ onAppointmentClick }: AppointmentTableProps) 
                   <td className="p-4">
                     <p className="text-slate-900 dark:text-white">{appointment.price}</p>
                   </td>
-                  <td className="p-4">
-                    <button
-                      className="p-2 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-lg transition-colors"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                      }}
-                    >
-                      <MoreVertical className="w-4 h-4 text-slate-500 dark:text-slate-400" />
-                    </button>
-                  </td>
+                  
                 </motion.tr>
               );
             })}
